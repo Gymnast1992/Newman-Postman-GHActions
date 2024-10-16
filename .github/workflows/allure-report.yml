@@ -1,21 +1,20 @@
-name: Allure Report CI
+name: Test-Build
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
+  test-api:
     runs-on: ubuntu-latest
-    
-    steps:
-      # Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v3
 
+    steps:
       # Set up Node.js
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v1
         with:
-          node-version: '20'  # Or whichever version you're using
+          node-version: "22.x" # Or whichever version you're using
 
       # Install dependencies
       - name: Install dependencies
@@ -26,47 +25,12 @@ jobs:
         run: |
           npm install -g newman
           npm install -g newman-reporter-htmlextra
-          
+
       # Make directory to upload the test results
       - name: Make Directory for results
         run: mkdir -p testResults
-      
-      # Run your tests and generate allure-results
-      - name: Run tests
-        run: npm test
-
-      # Install Allure commandline globally
-      - name: Install Allure
-        run: npm install -g allure-commandline
-      
-      # Generate Allure report
-      - name: Generate Allure Report
-        run: allure generate --clean allure-results
-
-      # Upload the allure report as a GitHub artifact
-      - name: Upload Allure Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: allure-report
-          path: allure-report/
-
-      # Optionally, serve the Allure report using GitHub Pages (if required)
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./allure-report
 
       #Run the Postman collection
       - name: Run Postman Collection
         run: |
           newman run Demo-My.postman_collection.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darktheme  >  testResults/runreport1.html
-
-      #Upload the contents of Test Results directory to workspace
-      # - name: Output the run Details
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: RunReports
-      #     path: testResults
-
-
