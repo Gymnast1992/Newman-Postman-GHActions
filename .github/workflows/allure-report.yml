@@ -20,6 +20,16 @@ jobs:
       # Install dependencies
       - name: Install dependencies
         run: npm install
+
+      # Install Newman
+      - name: Install Newman
+        run: |
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
+          
+      # Make directory to upload the test results
+      - name: Make Directory for results
+        run: mkdir -p testResults
       
       # Run your tests and generate allure-results
       - name: Run tests
@@ -46,3 +56,17 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./allure-report
+
+      #Run the Postman collection
+      - name: Run Postman Collection
+        run: |
+          newman run Demo-My.postman_collection.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darktheme  >  testResults/runreport1.html
+
+      #Upload the contents of Test Results directory to workspace
+      - name: Output the run Details
+        uses: actions/upload-artifact@v2
+        with:
+          name: RunReports
+          path: testResults
+
+          
