@@ -4,10 +4,9 @@
   "description": "",
   "scripts": {
     "tern-on-api": "cp mockApi/db_back_up.yaml mockApi/db_stage.yaml && npx yaml-server --hotReload=off --autoStart=off --port 3000 --database ./mockApi/db_stage.yaml",
-    "clean": "rimraf allure-results && rimraf allure-report && rimraf test-results && rimraf playwright-report && rimraf junit-results",
-    "play-report": "npx playwright show-report",
-    "allure-report": "allure generate ./allure-results --clean",
-    "open-report": "npm run allure-report && allure open ./allure-report"
+    "test": "newman run your-collection.json -r allure --reporter-allure-export allure-results",
+    "allure:report": "allure generate --clean allure-results && allure open",
+    "allure:serve": "allure serve allure-results"
   },
   "keywords": [
     "api",
